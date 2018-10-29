@@ -6,6 +6,16 @@
 #include <boost/core/demangle.hpp>
 #include <typeindex>
 
+#ifdef WINDOWS
+inline const char* CLASS_NAME(char const * name)
+{
+    return strstr(name, "class ") == name ? name + 6 : name;
+}
+#else
+#define CLASS_NAME(name) name
+#endif
+
+
 namespace appbase {
    namespace bpo = boost::program_options;
    namespace bfs = boost::filesystem;
@@ -98,7 +108,7 @@ namespace appbase {
 
          template<typename Plugin>
          Plugin* find_plugin()const {
-            string name = boost::core::demangle(typeid(Plugin).name());
+            string name = boost::core::demangle(CLASS_NAME(typeid(Plugin).name()));
             return dynamic_cast<Plugin*>(find_plugin(name));
          }
 
@@ -189,7 +199,7 @@ namespace appbase {
    template<typename Impl>
    class plugin : public abstract_plugin {
       public:
-         plugin():_name(boost::core::demangle(typeid(Impl).name())){}
+         plugin():_name(boost::core::demangle(CLASS_NAME(typeid(Impl).name()))){}
          virtual ~plugin(){}
 
          virtual state get_state()const override         { return _state; }
