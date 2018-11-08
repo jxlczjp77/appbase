@@ -6,7 +6,7 @@
 #include <boost/core/demangle.hpp>
 #include <typeindex>
 
-#ifdef WINDOWS
+#ifdef _MSC_VER
 inline const char* CLASS_NAME(char const * name)
 {
     return strstr(name, "class ") == name ? name + 6 : name;
