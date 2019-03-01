@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appbase", "msbuild\appbase.vcxproj", "{A785E66B-9F7F-4956-8832-F6A269930CA1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "appbase_test", "msbuild\appbase_test.vcxproj", "{598E647B-21C1-46DB-8AFA-5511F40248CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A785E66B-9F7F-4956-8832-F6A269930CA1} = {A785E66B-9F7F-4956-8832-F6A269930CA1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
