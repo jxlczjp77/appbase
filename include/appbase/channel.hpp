@@ -46,6 +46,8 @@ namespace appbase {
    template<typename Data, typename DispatchPolicy>
    class channel final {
       public:
+         using ios_ptr_type = std::shared_ptr<boost::asio::io_service>;
+
          /**
           * Type that represents an active subscription to a channel allowing
           * for ownership via RAII and also explicit unsubscribe actions
@@ -94,10 +96,16 @@ namespace appbase {
 
          /**
           * Publish data to a channel.  This data is *copied* on publish.
-          * @param priority - the priority to use for post
           * @param data - the data to publish
           */
-         void publish(int priority, const Data& data);
+         void publish(const Data& data) {
+            if (has_subscribers()) {
+               // this will copy data into the lambda
+               ios_ptr->post([this, data]() {
+                  _signal(data);
+               });
+            }
+         }
 
          /**
           * subscribe to data on a channel
@@ -132,7 +140,8 @@ namespace appbase {
          }
 
       private:
-         channel()
+         explicit channel(const ios_ptr_type& ios_ptr)
+         :ios_ptr(ios_ptr)
          {
          }
 
@@ -163,11 +172,12 @@ namespace appbase {
           * Construct a unique_ptr for the type erased method poiner
           * @return
           */
-         static erased_channel_ptr make_unique()
+         static erased_channel_ptr make_unique(const ios_ptr_type& ios_ptr)
          {
-            return erased_channel_ptr(new channel(), &deleter);
+            return erased_channel_ptr(new channel(ios_ptr), &deleter);
          }
 
+         ios_ptr_type ios_ptr;
          boost::signals2::signal<void(const Data&), DispatchPolicy> _signal;
 
          friend class appbase::application;
